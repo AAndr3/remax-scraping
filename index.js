@@ -13,11 +13,12 @@ app.get('/teste', (req, res) => {
 
 // SCRAPING
 async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
+  
   const browser = await chromium.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    executablePath: '/opt/render/project/.playwright/chromium/chrome-linux/chrome'
   });
-  
+
   const page = await browser.newPage();
 
   cidade = cidade.toLowerCase();
