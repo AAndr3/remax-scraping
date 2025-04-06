@@ -16,7 +16,6 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
   
   const browser = await chromium.launch({
     headless: true,
-    executablePath: '/opt/render/project/src/chromium-1161/chrome-linux/chrome'
   });
 
   const page = await browser.newPage();
