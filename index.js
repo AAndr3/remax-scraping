@@ -29,7 +29,7 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
 
   console.log('🔗 URL final:', url);
   await page.goto(url, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(2500);
 
   const dados = await page.$$eval('[data-id="listing-card-container"]', cards =>
     cards
@@ -41,7 +41,16 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
         const linhas = card.innerText.split('\n').map(l => l.trim()).filter(Boolean);
         const local = linhas.find(l => l.includes(',') && !l.includes('€') && !l.toLowerCase().includes('virtual'));
         if (!imagem || !link || !preco || !local) return null;
-        return [local, preco, imagem, `https://www.remax.pt${link}`];
+
+       // return [local, preco, imagem, `https://www.remax.pt${link}`];
+
+        return {
+          "titulo": `${local} - ${preco}`,
+          "imagem": imagem,
+          "url": `https://www.remax.pt${link}`,
+          "preco": preco
+        };
+
       })
       .filter(Boolean)
   );
