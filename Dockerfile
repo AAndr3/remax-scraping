@@ -1,21 +1,18 @@
-# Imagem base leve com suporte a Playwright
+# Usar imagem oficial do Node.js com suporte para Playwright
 FROM mcr.microsoft.com/playwright:v1.42.1-jammy
 
-# Define a pasta de trabalho
+# Definir diretório de trabalho
 WORKDIR /app
 
-# Copia os ficheiros necessários
-COPY package*.json ./
-COPY index.js ./
-
-# Instala as dependências
+# Copiar package.json e instalar dependências
+COPY package.json package-lock.json* ./
 RUN npm install
 
-# Copia tudo o resto (se tiveres mais ficheiros)
+# Copiar os restantes ficheiros do projeto
 COPY . .
 
-# Expõe a porta que o app usa
+# Expor a porta que o servidor usa
 EXPOSE 3333
 
-# Comando para correr o servidor
-CMD ["node", "index.js"]
+# Comando para arrancar o servidor
+CMD ["npm", "start"]
