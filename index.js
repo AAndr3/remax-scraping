@@ -1,5 +1,6 @@
 const express = require('express');
-const { chromium } = require('playwright');
+const { chromium } = require('playwright-core');
+const { executablePath } = require('playwright-aws-lambda');
 
 const app = express();
 
@@ -11,11 +12,12 @@ app.get('/teste', (req, res) => {
   res.send('FUNCIONA!');
 });
 
-// SCRAPING
+// FUNÇÃO DE SCRAPING
 async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
-  
   const browser = await chromium.launch({
     headless: true,
+    executablePath: await executablePath(),
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
   const page = await browser.newPage();
@@ -38,8 +40,10 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
       .map(card => {
         const imagem = card.querySelector('img')?.src;
         const link = card.querySelector('a[data-id="listing-card-link"]')?.getAttribute('href');
+
         const bTags = Array.from(card.querySelectorAll('b')).map(b => b.innerText.trim());
         const preco = bTags.find(text => text.includes('€')) || '-';
+
         const linhas = card.innerText.split('\n').map(l => l.trim()).filter(Boolean);
         const local = linhas.find(l => l.includes(',') && !l.includes('€') && !l.toLowerCase().includes('virtual'));
 
