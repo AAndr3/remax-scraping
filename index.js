@@ -29,7 +29,7 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
 
   console.log('🔗 URL final:', url);
   await page.goto(url, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(500);
 
   const dados = await page.$$eval('[data-id="listing-card-container"]', cards =>
     cards
