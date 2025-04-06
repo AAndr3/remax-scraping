@@ -2,13 +2,11 @@
   "name": "remax-scraper",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "commonjs",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "playwright-core": "^1.3.0",
-    "playwright-aws-lambda": "^0.11.0"
+    "playwright-core": "^1.42.1"
   }
 }

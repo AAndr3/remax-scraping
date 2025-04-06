@@ -1,23 +1,21 @@
 const express = require('express');
 const { chromium } = require('playwright-core');
-const { executablePath } = require('playwright-aws-lambda');
+const path = require('path');
 
 const app = express();
 
 console.log('🔥 ESTE É O FICHEIRO index.js QUE ESTÁ A CORRER 🔥');
 
-// ENDPOINT DE TESTE
 app.get('/teste', (req, res) => {
   console.log('🧪 Endpoint /teste chamado!');
   res.send('FUNCIONA!');
 });
 
-// FUNÇÃO DE SCRAPING
 async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
   const browser = await chromium.launch({
     headless: true,
-    executablePath: await executablePath(),
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    executablePath: '/usr/bin/chromium-browser' // Caminho fixo no Render
   });
 
   const page = await browser.newPage();
@@ -28,7 +26,7 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
   let url = `https://www.remax.pt/pt/comprar/imoveis/habitacao/${cidade}/r/r`;
   if (tipologia) url += `/${tipologia}`;
 
-  const queryParams = `?s=${encodeURIComponent(JSON.stringify({ rg: cidade.charAt(0).toUpperCase() + cidade.slice(1) }))}&p=1&o=-PublishDate`;
+  const queryParams = `?s=${encodeURIComponent({ rg: cidade.charAt(0).toUpperCase() + cidade.slice(1) })}&p=1&o=-PublishDate`;
   url += queryParams;
 
   console.log('🔗 URL final:', url);
@@ -58,7 +56,6 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
   return dados;
 }
 
-// ENDPOINT PRINCIPAL
 app.get('/scrape', async (req, res) => {
   const { cidade = 'lisboa', tipologia = '' } = req.query;
 
@@ -78,7 +75,6 @@ app.get('/scrape', async (req, res) => {
   }
 });
 
-// INICIAR SERVER
 app.listen(3333, () => {
   console.log('🟢 Server a correr em http://localhost:3333');
 });
