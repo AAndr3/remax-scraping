@@ -1,6 +1,5 @@
 const express = require('express');
 const { chromium } = require('playwright');
-const path = require('path');
 
 const app = express();
 
@@ -14,8 +13,7 @@ app.get('/teste', (req, res) => {
 async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
   const browser = await chromium.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: '/usr/bin/chromium-browser' // Caminho fixo no Render
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
   const page = await browser.newPage();
@@ -26,7 +24,7 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
   let url = `https://www.remax.pt/pt/comprar/imoveis/habitacao/${cidade}/r/r`;
   if (tipologia) url += `/${tipologia}`;
 
-  const queryParams = `?s=${encodeURIComponent({ rg: cidade.charAt(0).toUpperCase() + cidade.slice(1) })}&p=1&o=-PublishDate`;
+  const queryParams = `?s=${encodeURIComponent(JSON.stringify({ rg: cidade.charAt(0).toUpperCase() + cidade.slice(1) }))}&p=1&o=-PublishDate`;
   url += queryParams;
 
   console.log('🔗 URL final:', url);
@@ -38,15 +36,11 @@ async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
       .map(card => {
         const imagem = card.querySelector('img')?.src;
         const link = card.querySelector('a[data-id="listing-card-link"]')?.getAttribute('href');
-
         const bTags = Array.from(card.querySelectorAll('b')).map(b => b.innerText.trim());
         const preco = bTags.find(text => text.includes('€')) || '-';
-
         const linhas = card.innerText.split('\n').map(l => l.trim()).filter(Boolean);
         const local = linhas.find(l => l.includes(',') && !l.includes('€') && !l.toLowerCase().includes('virtual'));
-
         if (!imagem || !link || !preco || !local) return null;
-
         return [local, preco, imagem, `https://www.remax.pt${link}`];
       })
       .filter(Boolean)
