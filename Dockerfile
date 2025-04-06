@@ -1,16 +1,20 @@
-# Usa imagem base com Node.js e Chromium já incluído
+# Imagem base leve com suporte a Playwright
 FROM mcr.microsoft.com/playwright:v1.42.1-jammy
 
-# Cria diretório de trabalho
+# Define a pasta de trabalho
 WORKDIR /app
 
-# Copia os ficheiros
-COPY . .
+# Copia os ficheiros necessários
+COPY package*.json ./
+COPY index.js ./
 
-# Instala dependências
+# Instala as dependências
 RUN npm install
 
-# Expõe a porta
+# Copia tudo o resto (se tiveres mais ficheiros)
+COPY . .
+
+# Expõe a porta que o app usa
 EXPOSE 3333
 
 # Comando para correr o servidor
