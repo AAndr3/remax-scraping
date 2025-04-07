@@ -100,7 +100,8 @@ const express = require('express');
 
     await browser.close();
 
-    res.json({ status: 'ok', resultados: imagens.length, data: imagens });
+    res.json({ status: 'ok', imagens });
+
   } catch (err) {
     console.error('❌ ERRO NO /scrapefull:', err.message);
     res.status(500).json({ status: 'erro', mensagem: err.message });
