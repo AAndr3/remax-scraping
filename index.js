@@ -72,6 +72,40 @@ const express = require('express');
      res.status(500).json({ status: 'erro', mensagem: err.message });
    }
  });
+
+ app.get('/scrapefull', async (req, res) => {
+  const { url } = req.query;
+
+  if (!url || !url.startsWith('https://www.remax.pt/pt/imoveis/')) {
+    return res.status(400).json({ status: 'erro', mensagem: 'URL inválido ou não fornecido.' });
+  }
+
+  try {
+    const browser = await chromium.launch({
+      headless: true,
+      executablePath: await executablePath(),
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(2000);
+
+    const imagens = await page.$$eval('img', imgs =>
+      imgs
+        .map(img => img.src)
+        .filter(src => src.includes('maxwork.pt/l-feat')) // só as imagens do anúncio
+        .slice(0, 10) // no máximo 10
+    );
+
+    await browser.close();
+
+    res.json({ status: 'ok', imagens });
+  } catch (err) {
+    console.error('❌ ERRO NO /scrapefull:', err.message);
+    res.status(500).json({ status: 'erro', mensagem: err.message });
+  }
+});
  
  app.listen(3333, () => {
    console.log('🟢 Server a correr em http://localhost:3333');
