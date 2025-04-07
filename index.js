@@ -88,18 +88,19 @@ const express = require('express');
 
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
 
     const imagens = await page.$$eval('img', imgs =>
       imgs
         .map(img => img.src)
         .filter(src => src.includes('maxwork.pt/l-feat')) // só as imagens do anúncio
         .slice(0, 10) // no máximo 10
+        .map(src => ({ imagem: src }))
     );
 
     await browser.close();
 
-    res.json({ status: 'ok', imagens });
+    res.json({ status: 'ok', resultados: imagens.length, data: imagens });
   } catch (err) {
     console.error('❌ ERRO NO /scrapefull:', err.message);
     res.status(500).json({ status: 'erro', mensagem: err.message });
