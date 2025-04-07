@@ -5,7 +5,7 @@ const express = require('express');
  
  console.log('🔥 ESTE É O FICHEIRO index.js QUE ESTÁ A CORRER 🔥');
  
- async function scrapeRemax(cidade = 'coimbra', tipologia = '') {
+ async function scrapeRemax(cidade = 'coimbra', localidade='', tipologia = '') {
    const browser = await chromium.launch({
      headless: true,
      args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -15,8 +15,9 @@ const express = require('express');
  
    cidade = cidade.toLowerCase();
    tipologia = tipologia.toLowerCase();
+   localidade = localidade.toLocaleLowerCase();
  
-   let url = `https://www.remax.pt/pt/comprar/imoveis/habitacao/${cidade}/r/r`;
+   let url = `https://www.remax.pt/pt/comprar/imoveis/habitacao/${cidade}/${localidade}r/r`;
    if (tipologia) url += `/${tipologia}`;
  
    const queryParams = `?s=${encodeURIComponent(JSON.stringify({ rg: cidade.charAt(0).toUpperCase() + cidade.slice(1) }))}&p=1&o=-PublishDate`;
@@ -24,7 +25,7 @@ const express = require('express');
  
    console.log('🔗 URL final:', url);
    await page.goto(url, { waitUntil: 'networkidle' });
-   await page.waitForTimeout(500);
+   await page.waitForTimeout(100);
  
    const dados = await page.$$eval('[data-id="listing-card-container"]', cards =>
      cards
@@ -60,7 +61,7 @@ const express = require('express');
    console.log('🌍 Parâmetros recebidos:', cidade, tipologia);
  
    try {
-     const dados = await scrapeRemax(cidade, tipologia);
+     const dados = await scrapeRemax(cidade, localidade, tipologia);
  
      if (!Array.isArray(dados) || dados.length === 0) {
        throw new Error('Nenhum imóvel encontrado no scraping.');
