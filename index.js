@@ -56,7 +56,7 @@ const express = require('express');
  }
  
  app.get('/scrape', async (req, res) => {
-   const { cidade = 'lisboa', tipologia = '' } = req.query;
+   const { cidade = 'lisboa', localidade='', tipologia = '' } = req.query;
  
    console.log('🌍 Parâmetros recebidos:', cidade, tipologia);
  
