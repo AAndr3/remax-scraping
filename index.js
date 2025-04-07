@@ -83,13 +83,12 @@ const express = require('express');
   try {
     const browser = await chromium.launch({
       headless: true,
-      executablePath: await executablePath(),
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(1000);
 
     const imagens = await page.$$eval('img', imgs =>
       imgs
