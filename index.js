@@ -17,11 +17,17 @@ const express = require('express');
    tipologia = tipologia.toLowerCase();
    localidade = localidade.toLocaleLowerCase();
  
-   let url = `https://www.remax.pt/pt/comprar/imoveis/habitacao/${cidade}/${localidade}r/r`;
+   let url = `https://www.remax.pt/pt/comprar/imoveis/habitacao/${cidade}/${localidade}/r/r`;
    if (tipologia) url += `/${tipologia}`;
  
-   const queryParams = `?s=${encodeURIComponent(JSON.stringify({ rg: cidade.charAt(0).toUpperCase() + cidade.slice(1) }))}&p=1&o=-PublishDate`;
-   url += queryParams;
+   const regionName = localidade
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+  const queryParams = `?s=${encodeURIComponent(JSON.stringify({ rg: regionName }))}&p=1&o=-PublishDate`;
+
+  url += queryParams;
  
    console.log('🔗 URL final:', url);
    await page.goto(url, { waitUntil: 'networkidle' });
