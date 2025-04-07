@@ -1,6 +1,5 @@
 const express = require('express');
-const { chromium } = require('playwright-core');
-const { executablePath } = require('playwright-aws-lambda');
+const { chromium } = require('playwright');
 
 const app = express();
 
